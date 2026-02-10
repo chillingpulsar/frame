@@ -132,6 +132,35 @@ pub(crate) fn resolve_upscale_mode(
     }
 }
 
+pub(crate) fn compute_upscale_threads(
+    source_width: u32,
+    source_height: u32,
+    scale: u32,
+) -> String {
+    let output_pixels = (source_width as u64 * scale as u64)
+        * (source_height as u64 * scale as u64);
+
+    // proc: concurrent GPU inference frames — limited by VRAM
+    // > 4K output (~8.3M px): ~500MB+ per frame → single concurrent frame
+    // > 1080p output (~2M px): moderate pressure → 2 concurrent frames
+    // ≤ 1080p output: lightweight, pipeline benefits from concurrency → 4
+    let proc = if output_pixels > 8_294_400 {
+        1
+    } else if output_pixels > 2_073_600 {
+        2
+    } else {
+        4
+    };
+
+    // load/save: I/O threads — limited by CPU cores
+    let cpus = std::thread::available_parallelism()
+        .map(|n| n.get() as u32)
+        .unwrap_or(4);
+    let io = cpus.div_ceil(2).clamp(1, 4);
+
+    format!("{}:{}:{}", io, proc, io)
+}
+
 pub(crate) async fn validate_upscale_runtime(
     app: &AppHandle,
     mode: &str,
@@ -427,7 +456,11 @@ pub async fn run_upscale_worker(
         "-n".to_string(),
         model_name.to_string(),
         "-j".to_string(),
-        "4:4:4".to_string(),
+        compute_upscale_threads(
+            probe.width.unwrap_or(1920),
+            probe.height.unwrap_or(1080),
+            scale.parse::<u32>().unwrap_or(2),
+        ),
         "-g".to_string(),
         "0".to_string(),
         "-t".to_string(),

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AI Upscaling Setup:** Updated documentation across all supported languages to guide users through Real-ESRGAN asset installation.
 - **Upscaling Capability Detection:** The app now automatically detects the presence of the `realesrgan-ncnn-vulkan` sidecar and required ML models, gating UI controls accordingly.
 
+### Performance
+
+- **Upscale Thread Tuning:** The ML upscaling pipeline now dynamically tunes `realesrgan-ncnn-vulkan` thread counts (`load:proc:save`) based on source resolution, scale factor, and available CPU cores instead of using a fixed `4:4:4` configuration. This prevents VRAM exhaustion on lower-end GPUs while allowing higher concurrency on smaller inputs.
+
 ### Fixed
 
 - **AI Upscale Progress:** Improved progress accuracy by driving updates from per-frame completion logs and hardening calculations for videos where total frame counts cannot be pre-determined.
