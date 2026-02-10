@@ -56,6 +56,7 @@
 	const isNvencEncoder = $derived(NVENC_ENCODERS.has(config.videoCodec));
 	const isVideotoolboxEncoder = $derived(VIDEOTOOLBOX_ENCODERS.has(config.videoCodec));
 	const isHardwareEncoder = $derived(isNvencEncoder || isVideotoolboxEncoder);
+	const mlUpscaleAvailable = $derived(capabilities.encoders.ml_upscale);
 	const isMlUpscaleActive = $derived(config.mlUpscale && config.mlUpscale !== 'none');
 	const effectiveResolution = $derived(isMlUpscaleActive ? 'original' : config.resolution);
 	const presetOptions = VIDEO_PRESETS;
@@ -63,6 +64,12 @@
 	$effect(() => {
 		if (isMlUpscaleActive && config.resolution !== 'original') {
 			onUpdate({ resolution: 'original' });
+		}
+	});
+
+	$effect(() => {
+		if (!mlUpscaleAvailable && config.mlUpscale && config.mlUpscale !== 'none') {
+			onUpdate({ mlUpscale: 'none' });
 		}
 	});
 
@@ -172,16 +179,16 @@
 		<div class="space-y-3 pt-2">
 			<Label variant="section">{$_('video.mlUpscaling')}</Label>
 			<div class="grid grid-cols-2 gap-2">
-				{#each ML_UPSCALING_OPTIONS as opt (opt.id)}
-					<Button
-						variant={(config.mlUpscale || 'none') === opt.id ? 'selected' : 'outline'}
-						onclick={() => onUpdate({ mlUpscale: opt.id as ConversionConfig['mlUpscale'] })}
-						{disabled}
-						class="w-full"
-					>
-						{opt.label}
-					</Button>
-				{/each}
+					{#each ML_UPSCALING_OPTIONS as opt (opt.id)}
+						<Button
+							variant={(config.mlUpscale || 'none') === opt.id ? 'selected' : 'outline'}
+							onclick={() => onUpdate({ mlUpscale: opt.id as ConversionConfig['mlUpscale'] })}
+							disabled={disabled || (opt.id !== 'none' && !mlUpscaleAvailable)}
+							class="w-full"
+						>
+							{opt.label}
+						</Button>
+					{/each}
 			</div>
 		</div>
 
