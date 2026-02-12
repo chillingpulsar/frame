@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Shared Media Rules (FE/BE):** Container, audio-only, and codec-compatibility rules now come from a single shared `media-rules.json` source consumed by both frontend and backend validation paths, removing duplicated rule definitions.
+
+### Fixed
+
+- **Compatibility Drift Risk:** Eliminated a class of frontend/backend mismatches where UI-allowed configurations could diverge from Rust-side input validation due to duplicated hardcoded rule tables.
+
 ## [0.22.0] - 2026-02-11
 
 ### Added

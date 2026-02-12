@@ -1,3 +1,8 @@
+import {
+	ALL_CONTAINERS as SHARED_ALL_CONTAINERS,
+	AUDIO_ONLY_CONTAINERS as SHARED_AUDIO_ONLY_CONTAINERS
+} from '$lib/constants/media-rules';
+
 export enum FileStatus {
 	IDLE = 'IDLE',
 	QUEUED = 'QUEUED',
@@ -128,6 +133,6 @@ export interface PresetDefinition {
 
 export type MetadataStatus = 'idle' | 'loading' | 'ready' | 'error';
 
-export const AUDIO_ONLY_CONTAINERS = ['mp3', 'm4a', 'wav', 'flac'];
+export const AUDIO_ONLY_CONTAINERS = SHARED_AUDIO_ONLY_CONTAINERS;
 
-export const ALL_CONTAINERS = ['mp4', 'mkv', 'webm', 'mov', 'mp3', 'm4a', 'wav', 'flac'] as const;
+export const ALL_CONTAINERS = SHARED_ALL_CONTAINERS;

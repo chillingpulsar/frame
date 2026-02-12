@@ -5,6 +5,7 @@ use crate::conversion::codec::{
 };
 use crate::conversion::error::ConversionError;
 use crate::conversion::filters::{build_audio_filters, build_video_filters};
+use crate::conversion::media_rules::{is_audio_codec_allowed, is_video_codec_allowed};
 use crate::conversion::types::{ConversionConfig, MetadataConfig, MetadataMode};
 use crate::conversion::utils::{get_hwaccel_args, is_audio_only_container, parse_time};
 
@@ -194,10 +195,7 @@ fn sanitize_output_name(raw: &str) -> Option<String> {
 }
 
 pub fn build_output_path(file_path: &str, container: &str, output_name: Option<String>) -> String {
-    if let Some(custom) = output_name
-        .as_deref()
-        .and_then(sanitize_output_name)
-    {
+    if let Some(custom) = output_name.as_deref().and_then(sanitize_output_name) {
         let input_path = Path::new(file_path);
         let mut output: PathBuf = match input_path.parent() {
             Some(parent) if !parent.as_os_str().is_empty() => parent.to_path_buf(),
@@ -229,8 +227,16 @@ pub fn validate_task_input(
         )));
     }
 
-    let start_time = config.start_time.as_deref().map(str::trim).filter(|s| !s.is_empty());
-    let end_time = config.end_time.as_deref().map(str::trim).filter(|s| !s.is_empty());
+    let start_time = config
+        .start_time
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+    let end_time = config
+        .end_time
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
 
     if let Some(start) = start_time {
         if parse_time(start).is_none() {
@@ -345,59 +351,4 @@ pub fn validate_task_input(
     }
 
     Ok(())
-}
-
-fn is_video_codec_allowed(container: &str, codec: &str) -> bool {
-    match container {
-        "mp4" => matches!(
-            codec,
-            "libx264"
-                | "libx265"
-                | "vp9"
-                | "libsvtav1"
-                | "h264_videotoolbox"
-                | "h264_nvenc"
-                | "hevc_videotoolbox"
-                | "hevc_nvenc"
-                | "av1_nvenc"
-        ),
-        "mkv" => matches!(
-            codec,
-            "libx264"
-                | "libx265"
-                | "vp9"
-                | "prores"
-                | "libsvtav1"
-                | "h264_videotoolbox"
-                | "h264_nvenc"
-                | "hevc_videotoolbox"
-                | "hevc_nvenc"
-                | "av1_nvenc"
-        ),
-        "webm" => codec == "vp9",
-        "mov" => matches!(
-            codec,
-            "libx264"
-                | "libx265"
-                | "prores"
-                | "h264_videotoolbox"
-                | "h264_nvenc"
-                | "hevc_videotoolbox"
-                | "hevc_nvenc"
-        ),
-        _ => true,
-    }
-}
-
-fn is_audio_codec_allowed(container: &str, codec: &str) -> bool {
-    match container {
-        "mp3" => codec == "mp3",
-        "wav" => codec == "pcm_s16le",
-        "flac" => codec == "flac",
-        "m4a" => matches!(codec, "aac" | "alac"),
-        "mp4" => matches!(codec, "aac" | "ac3" | "libopus" | "mp3" | "alac"),
-        "webm" => matches!(codec, "libopus" | "vorbis"),
-        "mov" | "mkv" => true,
-        _ => true,
-    }
 }

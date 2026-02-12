@@ -596,6 +596,10 @@ mod parsing_tests {
 mod utils_tests {
     use std::path::Path;
 
+    use crate::conversion::media_rules::{
+        is_audio_codec_allowed as is_audio_codec_allowed_rule,
+        is_video_codec_allowed as is_video_codec_allowed_rule,
+    };
     use crate::conversion::utils::{
         is_audio_only_container, is_nvenc_codec, is_videotoolbox_codec, map_nvenc_preset,
         parse_frame_rate_string, parse_probe_bitrate, sanitize_external_tool_path,
@@ -650,7 +654,7 @@ mod utils_tests {
 
     #[test]
     fn audio_only_containers() {
-        let audio_containers = ["mp3", "wav", "flac", "aac", "m4a", "MP3", "FLAC"];
+        let audio_containers = ["mp3", "wav", "flac", "m4a", "aac", "MP3", "FLAC"];
         let video_containers = ["mp4", "mkv", "webm", "mov", "avi"];
 
         for c in audio_containers {
@@ -663,6 +667,15 @@ mod utils_tests {
                 c
             );
         }
+    }
+
+    #[test]
+    fn shared_codec_rules_are_applied() {
+        assert!(is_video_codec_allowed_rule("webm", "vp9"));
+        assert!(!is_video_codec_allowed_rule("webm", "libx264"));
+        assert!(is_audio_codec_allowed_rule("mov", "aac"));
+        assert!(is_audio_codec_allowed_rule("mkv", "flac"));
+        assert!(!is_audio_codec_allowed_rule("mp4", "flac"));
     }
 
     #[test]

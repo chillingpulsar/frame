@@ -1,3 +1,8 @@
+import {
+	CONTAINER_VIDEO_CODEC_COMPATIBILITY as SHARED_CONTAINER_VIDEO_CODEC_COMPATIBILITY,
+	VIDEO_CODEC_FALLBACK_ORDER as SHARED_VIDEO_CODEC_FALLBACK_ORDER
+} from '$lib/constants/media-rules';
+
 export const VIDEO_PRESETS = [
 	'ultrafast',
 	'superfast',
@@ -29,43 +34,9 @@ export const NVENC_ALLOWED_PRESETS = new Set<VideoPreset>(['fast', 'medium', 'sl
 export const NVENC_ENCODERS = new Set(['h264_nvenc', 'hevc_nvenc', 'av1_nvenc']);
 export const VIDEOTOOLBOX_ENCODERS = new Set(['h264_videotoolbox', 'hevc_videotoolbox']);
 
-export const CONTAINER_VIDEO_CODEC_COMPATIBILITY: Record<string, Set<string>> = {
-	mp4: new Set([
-		'libx264',
-		'libx265',
-		'vp9',
-		'libsvtav1',
-		'h264_videotoolbox',
-		'h264_nvenc',
-		'hevc_videotoolbox',
-		'hevc_nvenc',
-		'av1_nvenc'
-	]),
-	mkv: new Set([
-		'libx264',
-		'libx265',
-		'vp9',
-		'prores',
-		'libsvtav1',
-		'h264_videotoolbox',
-		'h264_nvenc',
-		'hevc_videotoolbox',
-		'hevc_nvenc',
-		'av1_nvenc'
-	]),
-	webm: new Set(['vp9']),
-	mov: new Set([
-		'libx264',
-		'libx265',
-		'prores',
-		'h264_videotoolbox',
-		'h264_nvenc',
-		'hevc_videotoolbox',
-		'hevc_nvenc'
-	])
-};
+export const CONTAINER_VIDEO_CODEC_COMPATIBILITY = SHARED_CONTAINER_VIDEO_CODEC_COMPATIBILITY;
 
-export const VIDEO_CODEC_FALLBACK_ORDER = ['libx264', 'libx265', 'vp9', 'prores', 'libsvtav1'];
+export const VIDEO_CODEC_FALLBACK_ORDER = SHARED_VIDEO_CODEC_FALLBACK_ORDER;
 
 export function isVideoPresetAllowed(codec: string, preset: string): boolean {
 	if (VIDEOTOOLBOX_ENCODERS.has(codec)) return true;
