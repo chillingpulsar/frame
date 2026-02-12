@@ -1,6 +1,7 @@
 {
-	"allContainers": ["mp4", "mkv", "webm", "mov", "mp3", "m4a", "wav", "flac"],
+	"allContainers": ["mp4", "mkv", "webm", "mov", "gif", "mp3", "m4a", "wav", "flac"],
 	"audioOnlyContainers": ["mp3", "m4a", "wav", "flac", "aac"],
+	"videoOnlyContainers": ["gif"],
 	"containerVideoCodecCompatibility": {
 		"mp4": [
 			"libx264",
@@ -34,7 +35,8 @@
 			"h264_nvenc",
 			"hevc_videotoolbox",
 			"hevc_nvenc"
-		]
+		],
+		"gif": ["gif"]
 	},
 	"containerAudioCodecCompatibility": {
 		"mp3": ["mp3"],
@@ -44,7 +46,8 @@
 		"mp4": ["aac", "ac3", "libopus", "mp3", "alac"],
 		"mov": ["*"],
 		"mkv": ["*"],
-		"webm": ["libopus", "vorbis"]
+		"webm": ["libopus", "vorbis"],
+		"gif": []
 	},
 	"defaultAudioCodec": {
 		"mp3": "mp3",
@@ -54,5 +57,5 @@
 		"webm": "libopus"
 	},
 	"defaultAudioCodecFallback": "aac",
-	"videoCodecFallbackOrder": ["libx264", "libx265", "vp9", "prores", "libsvtav1"]
+	"videoCodecFallbackOrder": ["libx264", "libx265", "vp9", "prores", "libsvtav1", "gif"]
 }

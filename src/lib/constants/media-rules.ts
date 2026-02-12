@@ -3,6 +3,7 @@ import rawMediaRules from '$lib/shared/media-rules.json';
 interface MediaRules {
 	allContainers: string[];
 	audioOnlyContainers: string[];
+	videoOnlyContainers: string[];
 	containerVideoCodecCompatibility: Record<string, string[]>;
 	containerAudioCodecCompatibility: Record<string, string[]>;
 	defaultAudioCodec: Record<string, string>;
@@ -19,11 +20,15 @@ function normalizeContainer(container: string): string {
 
 function buildCodecMap(source: Record<string, string[]>): Record<string, Set<string>> {
 	return Object.fromEntries(
-		Object.entries(source).map(([container, codecs]) => [normalizeContainer(container), new Set(codecs)])
+		Object.entries(source).map(([container, codecs]) => [
+			normalizeContainer(container),
+			new Set(codecs)
+		])
 	);
 }
 
 const AUDIO_ONLY_CONTAINER_SET = new Set(MEDIA_RULES.audioOnlyContainers.map(normalizeContainer));
+const VIDEO_ONLY_CONTAINER_SET = new Set(MEDIA_RULES.videoOnlyContainers.map(normalizeContainer));
 const VIDEO_COMPATIBILITY_MAP = buildCodecMap(MEDIA_RULES.containerVideoCodecCompatibility);
 const AUDIO_COMPATIBILITY_MAP = buildCodecMap(MEDIA_RULES.containerAudioCodecCompatibility);
 const DEFAULT_AUDIO_CODEC_MAP = Object.fromEntries(
@@ -40,6 +45,22 @@ export const CONTAINER_VIDEO_CODEC_COMPATIBILITY = VIDEO_COMPATIBILITY_MAP;
 
 export function isAudioOnlyContainer(container: string): boolean {
 	return AUDIO_ONLY_CONTAINER_SET.has(normalizeContainer(container));
+}
+
+export function isVideoOnlyContainer(container: string): boolean {
+	return VIDEO_ONLY_CONTAINER_SET.has(normalizeContainer(container));
+}
+
+export function containerSupportsAudio(container: string): boolean {
+	return !isVideoOnlyContainer(container);
+}
+
+export function containerSupportsSubtitles(container: string): boolean {
+	return !isAudioOnlyContainer(container) && !isVideoOnlyContainer(container);
+}
+
+export function isGifContainer(container: string): boolean {
+	return normalizeContainer(container) === 'gif';
 }
 
 export function isVideoCodecAllowedForContainer(container: string, codec: string): boolean {

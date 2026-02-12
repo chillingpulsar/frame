@@ -23,6 +23,7 @@ export const VIDEO_CODEC_OPTIONS = [
 	{ id: 'vp9', label: 'VP9 / Web' },
 	{ id: 'prores', label: 'Apple ProRes' },
 	{ id: 'libsvtav1', label: 'AV1 / SVT' },
+	{ id: 'gif', label: 'GIF / Palette' },
 	{ id: 'h264_videotoolbox', label: 'H.264 (Apple Silicon)' },
 	{ id: 'h264_nvenc', label: 'H.264 (NVIDIA)' },
 	{ id: 'hevc_videotoolbox', label: 'H.265 (Apple Silicon)' },

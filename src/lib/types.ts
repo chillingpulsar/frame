@@ -73,6 +73,9 @@ export interface ConversionConfig {
 	nvencTemporalAq: boolean;
 	videotoolboxAllowSw: boolean;
 	hwDecode: boolean;
+	gifColors?: number;
+	gifDither?: 'none' | 'bayer' | 'floyd_steinberg' | 'sierra2_4a';
+	gifLoop?: number;
 }
 
 export type MetadataMode = 'preserve' | 'clean' | 'replace';
